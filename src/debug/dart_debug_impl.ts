@@ -937,6 +937,11 @@ export class DartDebugSession extends DebugSession {
 			return;
 		}
 
+		if (!thread.paused) {
+			this.errorResponse(response, `Thread ${args.threadId} is not paused`);
+			return;
+		}
+
 		if (!this.vmService) {
 			this.errorResponse(response, `No VM service connection`);
 			return;
@@ -1428,6 +1433,16 @@ export class DartDebugSession extends DebugSession {
 
 		const data = frameId ? this.threadManager.getStoredData(frameId) : undefined;
 		const thread = data ? data.thread : this.threadManager.threads[0];
+
+		if (!thread) {
+			this.errorResponse(response, `No thread`);
+			return;
+		}
+
+		if (!thread.paused) {
+			this.errorResponse(response, `Thread is not paused`);
+			return;
+		}
 
 		try {
 			let result: DebuggerResult | undefined;
